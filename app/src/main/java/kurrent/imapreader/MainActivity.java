@@ -1,18 +1,25 @@
 package kurrent.imapreader;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class MainActivity extends ListActivity {
 
-    private EmailData datasource;
+    public static final String TAG = ListActivity.class.getSimpleName();
+    public static final String EMAIL_INFO = "kurrent.imapreader.MESSAGE";
+
+    public static EmailData datasource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,20 +27,57 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.activity_main);
 
         datasource = new EmailData(this);
+
         try {
             datasource.open();
         } catch (SQLException e) {
+            Log.e(TAG, "Exception caught: ", e);
             e.printStackTrace();
         }
 
-        datasource.addEmail(new Email(1, "Hello", "World"));
-        datasource.addEmail(new Email(2, "Baker", "Go Home"));
-        datasource.addEmail(new Email(3, "Work", "Why God Why"));
+        // Dummy Data
+//        Email one = new Email(1, "Hannah Coyne", "You are the best", "Always", "The subject says it all");
+//        Email two = new Email(2, "Baker", "I am mean", "December 12th, 2009", "Go Home");
+//        Email three = new Email(3, "Workman's Comp", "You're fired", "1/2/3", "Why God Why");
+        // TODO: efficiently manage the database
 
-        List<Email> emails = datasource.getAllEmails();
+//        if (datasource.getEmailCount() != 3) {
+//            datasource.addEmail(one);
+//            datasource.addEmail(two);
+//            datasource.addEmail(three);
+//        }
 
-        ArrayAdapter<Email> adapter = new ArrayAdapter<Email>(this, android.R.layout.simple_list_item_1, emails);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                EmailReader.fetch();
+            }
+        });
+
+        thread.start();
+
+        ArrayList<Email> data = datasource.getAllEmails();
+        ArrayList<String> emails = new ArrayList<String>();
+        for (Email e : data) {
+            emails.add("From: " + e.getFrom());
+        }
+
+        // Scrub Dummy Data
+//        for (Email e: emails) {
+//            datasource.deleteEmail(e);
+//        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emails);
         setListAdapter(adapter);
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Intent intent = new Intent(this, EmailViewActivity.class);
+        String data = datasource.getEmail(position + 1).toString();
+        intent.putExtra(EMAIL_INFO, data);
+        startActivity(intent);
     }
 
 
@@ -61,6 +105,7 @@ public class MainActivity extends ListActivity {
         try {
             datasource.open();
         } catch (SQLException e) {
+            Log.e(TAG, "Exception caught: ", e);
             e.printStackTrace();
         }
         super.onResume();

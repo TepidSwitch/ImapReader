@@ -4,5 +4,7 @@
     <string name="app_name">ImapReader</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="no_data">No items to display!</string>
+    <string name="title_activity_email_view">EmailViewActivity</string>
 
 </resources>
