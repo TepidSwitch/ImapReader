@@ -3,15 +3,28 @@ package kurrent.imapreader;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.sql.SQLException;
+
 public class EmailViewActivity extends ActionBarActivity {
+
+    public static final String TAG = EmailViewActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Open the damn database
+        try {
+            MainActivity.datasource.open();
+        } catch (SQLException e) {
+            Log.e(TAG, "Exception caught: ", e);
+            e.printStackTrace();
+        }
 
         // Get message from intent
         Intent intent = getIntent();
@@ -44,5 +57,11 @@ public class EmailViewActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        MainActivity.datasource.close();
+        super.onPause();
     }
 }

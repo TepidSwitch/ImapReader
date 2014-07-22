@@ -11,6 +11,10 @@ import android.util.Log;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     // All Static variables
+
+    // Own instance
+    private static DatabaseHandler sInstance;
+
     // Database Version
     public static final int DATABASE_VERSION = 1;
 
@@ -27,7 +31,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_SENTDATE = "sentDate";
     public static final String KEY_BODY = "body";
 
-    public DatabaseHandler(Context context) {
+    public static DatabaseHandler getInstance(Context context) {
+
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        if (sInstance == null) {
+            sInstance = new DatabaseHandler(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

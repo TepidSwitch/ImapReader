@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends ListActivity {
 
-    public static final String TAG = ListActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
     public static final String EMAIL_INFO = "kurrent.imapreader.MESSAGE";
 
     public static EmailData datasource;
@@ -35,18 +35,6 @@ public class MainActivity extends ListActivity {
             e.printStackTrace();
         }
 
-        // Dummy Data
-//        Email one = new Email(1, "Hannah Coyne", "You are the best", "Always", "The subject says it all");
-//        Email two = new Email(2, "Baker", "I am mean", "December 12th, 2009", "Go Home");
-//        Email three = new Email(3, "Workman's Comp", "You're fired", "1/2/3", "Why God Why");
-        // TODO: efficiently manage the database
-
-//        if (datasource.getEmailCount() != 3) {
-//            datasource.addEmail(one);
-//            datasource.addEmail(two);
-//            datasource.addEmail(three);
-//        }
-
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -56,16 +44,13 @@ public class MainActivity extends ListActivity {
 
         thread.start();
 
+//        new DownloadEmailsTask().execute();
+
         ArrayList<Email> data = datasource.getAllEmails();
         ArrayList<String> emails = new ArrayList<String>();
         for (Email e : data) {
             emails.add("From: " + e.getFrom());
         }
-
-        // Scrub Dummy Data
-//        for (Email e: emails) {
-//            datasource.deleteEmail(e);
-//        }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emails);
         setListAdapter(adapter);
@@ -113,7 +98,16 @@ public class MainActivity extends ListActivity {
 
     @Override
     protected void onPause() {
-        datasource.close();
+//        datasource.close();
         super.onPause();
     }
+
+//    private class DownloadEmailsTask extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            EmailReader.fetch();
+//            return null;
+//        }
+//    }
 }

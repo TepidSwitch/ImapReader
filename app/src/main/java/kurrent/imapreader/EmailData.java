@@ -25,7 +25,7 @@ public class EmailData {
     private DatabaseHandler handler;
 
     public EmailData(Context context) {
-        handler = new DatabaseHandler(context);
+        handler = DatabaseHandler.getInstance(context);
     }
 
     public void open() throws SQLException {
